@@ -1,0 +1,11 @@
+{
+  "env": {
+    "EXAMPLE": {
+      "presets": ["env"]
+    },
+    "TEST": {
+      "presets": ["env", "power-assert"],
+      "plugins": ["istanbul"]
+    }
+  }
+}
