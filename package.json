@@ -1,6 +1,6 @@
 {
   "name": "chin-plugin-compose",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "repository": "kthjm/chin-plugin-compose",
   "author": "kthjm <toxictoxer@gmail.com>",
   "main": "index.js",
@@ -40,6 +40,7 @@
     "nyc": "^11.7.1",
     "power-assert": "^1.5.0",
     "rehype-remark": "^3.0.0",
-    "remark-rehype": "^3.0.0"
+    "remark-rehype": "^3.0.0",
+    "rewire": "^4.0.1"
   }
 }

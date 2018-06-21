@@ -1,3 +1,6 @@
+const { parse, format } = require('path')
+const { assign } = Object
+
 module.exports = (extensions) => ({
   options: extensions[0].options,
   isStream: extensions[0].isStream,
@@ -12,21 +15,35 @@ const recursiveProcess = (extensions, data, util) =>
     .splice(0, 1)[0]
     .processor(data, util)
   )
-  .then(result =>
+  .then(result => resultNormalize(result, util.out))
+  .then(results =>
     !extensions.length
-    ? result
-    : Promise.all(
-      resultNormalize(result).map(processed =>
-        recursiveProcess(extensions, processed, util)
+    ?
+    results
+    :
+    Promise.all(
+      results.map(([ outpath, processed ]) =>
+        recursiveProcess(
+          extensions,
+          processed,
+          assign({}, util, { out: parseXbase(outpath) })
+        )
       )
     )
+    .then(([ results ]) => results)
   )
 
-const resultNormalize = (result) =>
+const resultNormalize = (result, out) =>
   !Array.isArray(result) ?
-  [ result ] :
+  [ [format(out), result] ] :
 
   !Array.isArray(result[0]) ?
-  [ result[1] ] :
+  [ result ] :
 
-  result.map(_result => _result[1])
+  result
+
+const parseXbase = (path) =>
+  Object
+  .entries(parse(path))
+  .filter(([key]) => key !== 'base')
+  .reduce((a, [key,value]) => assign(a, { [key]: value }), {})
