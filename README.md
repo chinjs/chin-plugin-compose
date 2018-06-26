@@ -2,10 +2,10 @@
 
 [![npm](https://img.shields.io/npm/v/chin-plugin-compose.svg?longCache=true&style=flat-square)](https://www.npmjs.com/package/chin-plugin-compose)
 [![npm](https://img.shields.io/npm/dm/chin-plugin-compose.svg?longCache=true&style=flat-square)](https://www.npmjs.com/package/chin-plugin-compose)
-[![Build Status](https://img.shields.io/travis/kthjm/chin-plugin-compose.svg?longCache=true&style=flat-square)](https://travis-ci.org/kthjm/chin-plugin-compose)
-[![Coverage Status](https://img.shields.io/codecov/c/github/kthjm/chin-plugin-compose.svg?longCache=true&style=flat-square)](https://codecov.io/github/kthjm/chin-plugin-compose)
+[![Build Status](https://img.shields.io/travis/chinjs/chin-plugin-compose.svg?longCache=true&style=flat-square)](https://travis-ci.org/chinjs/chin-plugin-compose)
+[![Coverage Status](https://img.shields.io/codecov/c/github/chinjs/chin-plugin-compose.svg?longCache=true&style=flat-square)](https://codecov.io/github/chinjs/chin-plugin-compose)
 
-[chin](https://github.com/kthjm/chin) plugin compose extensions.
+[chin](https://github.com/chinjs/chin) plugin compose extensions.
 
 ## Installation
 ```shell

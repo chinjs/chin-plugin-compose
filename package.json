@@ -1,7 +1,7 @@
 {
   "name": "chin-plugin-compose",
-  "version": "0.0.2",
-  "repository": "kthjm/chin-plugin-compose",
+  "version": "0.0.3",
+  "repository": "chinjs/chin-plugin-compose",
   "author": "kthjm <toxictoxer@gmail.com>",
   "main": "index.js",
   "license": "MIT",
