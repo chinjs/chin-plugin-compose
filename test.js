@@ -28,7 +28,7 @@ it('mount', () =>
 const markdown = `
 # title
 
-[![alt](https://www.w3schools.com/w3images/lights.jpg)](https://github.com/kthjm/chin-plugin-compose)
+[![alt](https://www.w3schools.com/w3images/lights.jpg)](https://github.com/chinjs/chin-plugin-compose)
 
 - 0
 - 1
