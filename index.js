@@ -40,20 +40,23 @@ const reprocess = (extensions, data_or_pipe, util) =>
     return extension.processor(data_or_pipe, util)
   })
   .then(result => {
+    
     const results = result2results(result, util.out)
-    const firstProcessed = results[0][1]
-    const resultIsStream = firstProcessed && typeof firstProcessed.pipe === 'function'
 
-    return !extensions.length
-    ? results
-    : Promise.all(results.map(([ outpath, processed ]) =>
-      reprocess(
-        extensions,
-        resultIsStream ? (...arg) => processed.pipe(...arg) : processed,
-        assign({}, util, { out: parseXbase(outpath) })
-      )
-    ))
-    .then(([ results ]) => results)
+    if (!extensions.length) {
+      return results
+    } else {
+      const firstProcessed = results[0][1]
+      const resultIsStream = firstProcessed && typeof firstProcessed.pipe === 'function'
+      return Promise.all(results.map(([ outpath, processed ]) =>
+        reprocess(
+          extensions,
+          resultIsStream ? (...arg) => processed.pipe(...arg) : processed,
+          assign({}, util, { out: parseXbase(outpath) })
+        )
+      ))
+      .then(([ results ]) => results)
+    }
   })
 
 
