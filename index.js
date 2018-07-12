@@ -40,7 +40,7 @@ const reprocess = (extensions, data_or_pipe, util) =>
     return extension.processor(data_or_pipe, util)
   })
   .then(result => {
-    
+
     const results = result2results(result, util.out)
 
     if (!extensions.length) {
