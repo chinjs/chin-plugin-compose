@@ -18,8 +18,12 @@ const md2html2json = compose([
 ])
 
 const html2md2json = compose([
+  convert('buffer2stream'),
+  convert('stream2buffer'),
   unified('h2m', [hast2mdast]),
-  json()
+  json(),
+  convert('buffer2stream'),
+  convert('stream2buffer')
 ])
 
 const ink2min2png2min = compose([

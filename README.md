@@ -16,16 +16,47 @@ yarn add -D chin chin-plugin-compose
 
 ### compose(extensions)
 ```js
-import compose from 'chin-plugin-compose'
-import json from 'chin-plugin-json'
-import unified from 'chin-plugin-unified'
-import mdast2hast from 'remark-rehype'
+const compose = require('chin-plugin-compose')
+const unified = require('chin-plugin-unified')
+const mdast2hast = require('remark-rehype')
+const json = require('chin-plugin-json')
 
 const md2html2json = compose([
   unified('m2h', [mdast2hast]),
   json()
 ])
 ```
+
+### convert(type)
+
+`convert` can be used in the situation when need to `compose` extensions that includes different type. At least, extensions must be made `extensions[0]` and `extensions[length - 1]` be same type.
+
+```js
+const { compose, convert } = require('chin-plugin-compose')
+const inkscape = require('chin-plugin-inkscape')
+const imagemin = require('chin-plugin-imagemin')
+
+const svg2png2min = compose([
+  inkscape('png'),          // { isStream: true }
+  convert('stream2buffer'), // shift
+  imagemin(),               // { isStream: false }
+  convert('buffer2stream')  // restore
+])
+
+const svg2min2png = compose([
+  imagemin(),               // { isStream: false }
+  convert('buffer2stream'), // shift
+  inkscape('png'),          // { isStream: true }
+  convert('stream2buffer')  // restore
+])
+```
+
+#### type
+- `'stream2buffer'` || `'s2b'`
+- `'buffer2stream'` || `'b2s'`
+
+#### plugins as stream
+- [`chin-plugin-inkscape`](https://github.com/chinjs/chin-plugin-inkscape)
 
 ## License
 MIT (http://opensource.org/licenses/MIT)
