@@ -60,7 +60,21 @@ it('compose with convert', () => {
   })
 })
 
-it('convert(invalid_type) => throwd', () => {
-  const { convert } = modules
-  assert.throws(() => convert('invalid_type'))
+describe('throwd', () => {
+
+  it('compose(!Array.isArray())', () => {
+    const { compose } = modules
+    assert.throws(() => compose('not_array'))
+  })
+
+  it('compose([ not_object ])', () => {
+    const { compose } = modules
+    assert.throws(() => compose([ 'not_object' ]))
+  })
+
+  it('convert(invalid_type)', () => {
+    const { convert } = modules
+    assert.throws(() => convert('invalid_type'))
+  })
 })
+

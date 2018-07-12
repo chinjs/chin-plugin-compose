@@ -14,6 +14,7 @@ const parseXbase = (path) => {
 /* compose */
 const compose = (extensions) => {
   asserts(Array.isArray(extensions), `(${NAME}) !Array.isArray(extensions)`)
+  asserts(typeof extensions[0] === 'object', `(${NAME}) typeof extensions[0] !== 'object'`)
   return {
     options: extensions[0].options,
     isStream: extensions[0].isStream,
