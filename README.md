@@ -27,36 +27,44 @@ const md2html2json = compose([
 ])
 ```
 
-### convert(type)
+### dock(type, extensions[, options])
 
-`convert` can be used in the situation when need to `compose` extensions that includes different type. At least, extensions must be made `extensions[0]` and `extensions[length - 1]` be same type.
+Because composed extension's type  is determined by `extensions[0]`, `dock` can be used in the situation when need to `compose` extensions that includes different type.
 
 ```js
-const { compose, convert } = require('chin-plugin-compose')
+const { compose, dock } = require('chin-plugin-compose')
 const inkscape = require('chin-plugin-inkscape')
 const imagemin = require('chin-plugin-imagemin')
 
 const svg2png2min = compose([
-  inkscape('png'),          // { isStream: true }
-  convert('stream2buffer'), // shift
-  imagemin(),               // { isStream: false }
-  convert('buffer2stream')  // restore
+  inkscape('png'), // { isStream: true }
+  dock('buffer', [ imagemin() ])
 ])
 
 const svg2min2png = compose([
-  imagemin(),               // { isStream: false }
-  convert('buffer2stream'), // shift
-  inkscape('png'),          // { isStream: true }
-  convert('stream2buffer')  // restore
+  imagemin(), // { isStream: false }
+  dock('stream', [ inkscape('png') ])
 ])
 ```
 
 #### type
-- `'stream2buffer'` || `'s2b'`
-- `'buffer2stream'` || `'b2s'`
+- `'stream'`
+- `'buffer'`
 
-#### plugins as stream
-- [`chin-plugin-inkscape`](https://github.com/chinjs/chin-plugin-inkscape)
+#### options
+- `encoding` (= `null`)
+
+## Plugins
+|name|encoding|isStream|
+|:-|:-:|:-:|
+|[`chin-plugin-imagemin`](https://github.com/chinjs/chin-plugin-imagemin)|`null`|-|
+|[`chin-plugin-unified`](https://github.com/chinjs/chin-plugin-unified)|`'utf8'`|-|
+|[`chin-plugin-json`](https://github.com/chinjs/chin-plugin-json)|`'utf8'`|-|
+|[`chin-plugin-convert-svg`](https://github.com/chinjs/chin-plugin-convert-svg)|`null`|-|
+|[`chin-plugin-inkscape`](https://github.com/chinjs/chin-plugin-inkscape)|`null`|✔|
+|[`chin-plugin-svgr`](https://github.com/chinjs/chin-plugin-svgr)|`null`|-|
+|[`chin-plugin-favicons`](https://github.com/chinjs/chin-plugin-favicons)|`null`|-|
+|[`chin-plugin-gulp`](https://github.com/chinjs/chin-plugin-gulp)|`null`|-|
 
 ## License
 MIT (http://opensource.org/licenses/MIT)

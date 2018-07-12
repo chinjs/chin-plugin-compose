@@ -6,7 +6,7 @@ const modules = rewire('.')
 const parseXbase = modules.__get__('parseXbase')
 
 it('compose', () => {
-  const { compose } = modules
+  const { compose, dock } = modules
   const unified = require('chin-plugin-unified')
   const mdast2hast = require('remark-rehype')
   const hast2mdast = require('rehype-remark')
@@ -25,8 +25,11 @@ it('compose', () => {
 
   return compose([
     unified('m2h', [mdast2hast]),
+    dock('stream', [], { encoding: 'utf8' }),
     unified('h2m', [hast2mdast]),
-    json()
+    dock('stream', [], { encoding: 'utf8' }),
+    json(),
+    dock('stream', [], { encoding: 'utf8' })
   ])
   .processor(
     markdown,
@@ -38,43 +41,11 @@ it('compose', () => {
   })
 })
 
-it('compose with convert', () => {
-  const { compose, convert } = modules
-  const { createReadStream } = require('fs')
-  const stream = createReadStream('package.json')
-  const pipe = (...arg) => stream.pipe(...arg)
-
-  return compose([
-    convert('stream2buffer'),
-    convert('buffer2stream'),
-    convert('s2b'),
-    convert('b2s')
-  ])
-  .processor(
-    pipe,
-    { out: parseXbase(resolve('./stub.md')) }
-  )
-  .then(([ [ outpath, processed ] ]) => {
-    assert.equal(outpath, resolve('./stub.md'))
-    assert.ok(processed.readable)
-  })
-})
-
 describe('throwd', () => {
-
-  it('compose(!Array.isArray())', () => {
-    const { compose } = modules
-    assert.throws(() => compose('not_array'))
-  })
-
-  it('compose([ not_object ])', () => {
-    const { compose } = modules
-    assert.throws(() => compose([ 'not_object' ]))
-  })
-
-  it('convert(invalid_type)', () => {
-    const { convert } = modules
-    assert.throws(() => convert('invalid_type'))
-  })
+  const { compose, dock } = modules
+  const test = (callback) => () => assert.throws(callback)
+  it('compose(!Array.isArray())', test(() => compose('not_array')))
+  it('compose([ not_object ])', test(() => compose([ 'not_object' ])))
+  it('compose([ { isCompose: true } ])', test(() => compose([ dock('stream') ])))
+  it('dock(invalid_type)', test(() => dock('invalid_type')))
 })
-

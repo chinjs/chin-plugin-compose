@@ -12,10 +12,12 @@ const parseXbase = (path) => {
 }
 
 /* compose */
-const compose = (extensions) => {
+const compose = (extensions, isDock) => {
   asserts(Array.isArray(extensions), `(${NAME}) !Array.isArray(extensions)`)
   asserts(typeof extensions[0] === 'object', `(${NAME}) typeof extensions[0] !== 'object'`)
+  asserts(isDock || !extensions[0].isCompose, `(${NAME}) extensions[0] === dock()`)
   return {
+    isCompose: true,
     options: extensions[0].options,
     isStream: extensions[0].isStream,
     processor: (data_or_pipe, util) =>
@@ -54,38 +56,59 @@ const reprocess = (extensions, data_or_pipe, util) =>
         assign({}, util, { out: parseXbase(outpath) })
       )
     ))
-    .then(alled => alled.map(([ results ]) => results))
+    .then(alled => [].concat(...alled))
   })
 
+/* dock */
+const dock = (type, extensions = [], { encoding } = {}) => {
+  const _buffer2stream = buffer2stream(encoding)
+  const _stream2buffer = stream2buffer(encoding)
 
-/* convert */
-const convert = (type) =>
-  (type === 's2b' || type === 'stream2buffer') ? stream2buffer() :
-  (type === 'b2s' || type === 'buffer2stream') ? buffer2stream() :
-  throws(`(${NAME}) convert(${type}) is invalid`)
+  if (type === 'stream') {
+    extensions.unshift(_buffer2stream)
+    extensions.push(_stream2buffer)
+  } else if (type === 'buffer') {
+    extensions.unshift(_stream2buffer)
+    extensions.push(_buffer2stream)
+  } else {
+    throws(`(${NAME}) dock(type) is invalid`)
+  }
 
-const stream2buffer = () => ({
-  isStream: true,
-  processor: (pipe, { out }) => new Promise((resolve, reject) => {
-    const buffers = []
-    const transform = new Transform({ transform(chunk, enc, cb) { cb(null, chunk) } })
-    const stream = pipe(transform)
-    stream.on('error', reject)
-    stream.on('data', (chunk) => buffers.push(chunk))
-    stream.on('end', () => resolve([ format(out), Buffer.concat(buffers) ]))
-  })
-})
+  return compose(extensions, true)
+}
 
-const buffer2stream = () => ({
+const buffer2stream = (encoding = null) => ({
   isStream: false,
+  options: { encoding },
   processor: (data, { out }) => {
+    asserts(typeof data !== 'function', `(${NAME}) buffer2stream passed "pipe"`)
     const stream = new Readable()
     stream.push(data)
     stream.push(null)
-    return [ format(out), stream ]
+    return [
+      format(out),
+      stream
+    ]
   }
+})
+
+const stream2buffer = (encoding = null) => ({
+  isStream: true,
+  options: { encoding },
+  processor: (pipe, { out }) => new Promise((resolve, reject) => {
+    asserts(typeof pipe === 'function', `(${NAME}) stream2buffer passed "data"`)
+    const buffers = []
+    const transform = new Transform({ encoding, transform: (chunk, enc, cb) => cb(null, chunk) })
+    const stream = pipe(transform)
+    stream.on('error', reject)
+    stream.on('data', (chunk) => buffers.push(chunk))
+    stream.on('end', () => resolve([
+      format(out),
+      Buffer.isBuffer(buffers[0]) ? Buffer.concat(buffers) : buffers.join('')
+    ]))
+  })
 })
 
 module.exports = compose
 module.exports.compose = compose
-module.exports.convert = convert
+module.exports.dock = dock

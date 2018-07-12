@@ -1,4 +1,4 @@
-import compose, { convert } from '..'
+import compose, { dock } from '..'
 import unified from 'chin-plugin-unified'
 import hast2mdast from 'rehype-remark'
 import mdast2hast from 'remark-rehype'
@@ -12,42 +12,45 @@ import { join } from 'path'
 const put = join(__dirname, 'put')
 const out = join(__dirname, 'out')
 
-const md2html2json = compose([
-  unified('m2h', [mdast2hast]),
-  json()
-])
-
-const html2md2json = compose([
-  convert('buffer2stream'),
-  convert('stream2buffer'),
-  unified('h2m', [hast2mdast]),
-  json(),
-  convert('buffer2stream'),
-  convert('stream2buffer')
-])
-
-const ink2min2png2min = compose([
-  gulp(() => [ gulpImagemin() ]),
-  convert('buffer2stream'),
-  inkscape('png'),
-  convert('stream2buffer'),
-  chinImagemin()
-])
-
-const ink2png2min = compose([
-  inkscape('png'),
-  convert('s2b'),
-  gulp(() => [ gulpImagemin() ]),
-  convert('b2s')
-])
-
-export default {
-  put,
-  out,
-  clean: true,
-  processors: [
-    ['read_as_buffer', { svg: ink2min2png2min }],
-    ['read_as_stream', { svg: ink2png2min }],
-    ['*', { md: md2html2json, html: html2md2json }]
-  ]
-}
+export default [
+  {
+    put: `${put}/unified`,
+    out: `${out}/unified`,
+    clean: true,
+    processors: {
+      md: compose([
+        unified('m2h', [mdast2hast]),
+        json()
+      ]),
+      html: compose([
+        unified('h2m', [hast2mdast]),
+        dock('stream', [], { encoding: 'utf8' }),
+        json(),
+        dock('stream', [], { encoding: 'utf8' })
+      ])
+    }
+  },
+  {
+    put: `${put}/inkscape`,
+    out: `${out}/inkscape.dock_as_stream`,
+    clean: true,
+    processors: {
+      svg: compose([
+        gulp(() => [ gulpImagemin() ]),
+        dock('stream', [ inkscape('png') ]),
+        chinImagemin()
+      ])
+    }
+  },
+  {
+    put: `${put}/inkscape`,
+    out: `${out}/inkscape.dock_as_buffer`,
+    clean: true,
+    processors: {
+      svg: compose([
+        inkscape('png'),
+        dock('buffer', [ gulp(() => [ gulpImagemin() ]) ])
+      ])
+    }
+  }
+]
