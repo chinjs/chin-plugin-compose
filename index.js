@@ -41,23 +41,20 @@ const reprocess = (extensions, data_or_pipe, util) =>
     return extension.processor(data_or_pipe, util)
   })
   .then(result => {
-
     const results = result2results(result, util.out)
 
-    if (!extensions.length) {
-      return results
-    } else {
-      const firstProcessed = results[0][1]
-      const resultIsStream = firstProcessed && typeof firstProcessed.pipe === 'function'
-      return Promise.all(results.map(([ outpath, processed ]) =>
-        reprocess(
-          extensions,
-          resultIsStream ? (...arg) => processed.pipe(...arg) : processed,
-          assign({}, util, { out: parseXbase(outpath) })
-        )
-      ))
-      .then(([ results ]) => results)
-    }
+    if (!extensions.length) return results
+
+    const firstProcessed = results[0][1]
+    const resultIsStream = firstProcessed && typeof firstProcessed.pipe === 'function'
+    return Promise.all(results.map(([ outpath, processed ]) =>
+      reprocess(
+        extensions,
+        resultIsStream ? (...arg) => processed.pipe(...arg) : processed,
+        assign({}, util, { out: parseXbase(outpath) })
+      )
+    ))
+    .then(alled => alled.map(([ results ]) => results))
   })
 
 
@@ -65,7 +62,7 @@ const reprocess = (extensions, data_or_pipe, util) =>
 const convert = (type) =>
   (type === 's2b' || type === 'stream2buffer') ? stream2buffer() :
   (type === 'b2s' || type === 'buffer2stream') ? buffer2stream() :
-  throws(`(${NAME}) ${type} is invalid`)
+  throws(`(${NAME}) convert(${type}) is invalid`)
 
 const stream2buffer = () => ({
   isStream: true,
