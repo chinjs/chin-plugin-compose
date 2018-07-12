@@ -1,6 +1,6 @@
 {
   "name": "chin-plugin-compose",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "repository": "chinjs/chin-plugin-compose",
   "author": "kthjm <toxictoxer@gmail.com>",
   "main": "index.js",
@@ -9,7 +9,8 @@
   "keywords": [
     "chin",
     "chin-plugin",
-    "compose"
+    "compose",
+    "convert"
   ],
   "nyc": {
     "sourceMap": false,
@@ -24,18 +25,22 @@
     "coverage": "nyc report --reporter=lcov && codecov"
   },
   "peerDependencies": {
-    "chin": "^3.0.6"
+    "chin": "^3.0.7"
   },
   "devDependencies": {
     "babel-core": "^6.26.3",
     "babel-plugin-istanbul": "^4.1.6",
     "babel-preset-env": "^1.6.1",
     "babel-preset-power-assert": "^2.0.0",
-    "chin": "^3.0.6",
+    "chin": "^3.0.7",
+    "chin-plugin-gulp": "^0.0.1",
+    "chin-plugin-imagemin": "^0.0.4",
+    "chin-plugin-inkscape": "^0.0.7",
     "chin-plugin-json": "^0.0.1",
     "chin-plugin-unified": "^0.0.3",
     "codecov": "^3.0.1",
     "cross-env": "^5.1.4",
+    "gulp-imagemin": "^4.1.0",
     "mocha": "^5.1.1",
     "nyc": "^11.7.1",
     "power-assert": "^1.5.0",
