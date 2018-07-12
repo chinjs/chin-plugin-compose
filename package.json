@@ -9,8 +9,7 @@
   "keywords": [
     "chin",
     "chin-plugin",
-    "compose",
-    "convert"
+    "compose"
   ],
   "nyc": {
     "sourceMap": false,
