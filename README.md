@@ -16,16 +16,55 @@ yarn add -D chin chin-plugin-compose
 
 ### compose(extensions)
 ```js
-import compose from 'chin-plugin-compose'
-import json from 'chin-plugin-json'
-import unified from 'chin-plugin-unified'
-import mdast2hast from 'remark-rehype'
+const compose = require('chin-plugin-compose')
+const unified = require('chin-plugin-unified')
+const mdast2hast = require('remark-rehype')
+const json = require('chin-plugin-json')
 
 const md2html2json = compose([
   unified('m2h', [mdast2hast]),
   json()
 ])
 ```
+
+### dock(type, extensions[, options])
+
+Because composed extension's type  is determined by `extensions[0]`, `dock` can be used in the situation when need to `compose` extensions that includes different type.
+
+```js
+const { compose, dock } = require('chin-plugin-compose')
+const inkscape = require('chin-plugin-inkscape')
+const imagemin = require('chin-plugin-imagemin')
+
+const svg2png2min = compose([
+  inkscape('png'), // { isStream: true }
+  dock('buffer', [ imagemin() ])
+])
+
+const svg2min2png = compose([
+  imagemin(), // { isStream: false }
+  dock('stream', [ inkscape('png') ])
+])
+```
+
+#### type
+- `'stream'`
+- `'buffer'`
+
+#### options
+- `encoding` (= `null`)
+
+## Plugins
+|name|encoding|isStream|
+|:-|:-:|:-:|
+|[`chin-plugin-imagemin`](https://github.com/chinjs/chin-plugin-imagemin)|`null`|-|
+|[`chin-plugin-unified`](https://github.com/chinjs/chin-plugin-unified)|`'utf8'`|-|
+|[`chin-plugin-json`](https://github.com/chinjs/chin-plugin-json)|`'utf8'`|-|
+|[`chin-plugin-convert-svg`](https://github.com/chinjs/chin-plugin-convert-svg)|`null`|-|
+|[`chin-plugin-inkscape`](https://github.com/chinjs/chin-plugin-inkscape)|`null`|✔|
+|[`chin-plugin-svgr`](https://github.com/chinjs/chin-plugin-svgr)|`null`|-|
+|[`chin-plugin-favicons`](https://github.com/chinjs/chin-plugin-favicons)|`null`|-|
+|[`chin-plugin-gulp`](https://github.com/chinjs/chin-plugin-gulp)|`null`|-|
 
 ## License
 MIT (http://opensource.org/licenses/MIT)
