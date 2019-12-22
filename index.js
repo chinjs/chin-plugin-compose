@@ -20,12 +20,9 @@ const compose = (extensions, isDock) => {
     isCompose: true,
     options: extensions[0].options,
     isStream: extensions[0].isStream,
-    processor: (data_or_pipe, util) =>
-      reprocess(
-        [].concat(extensions),
-        data_or_pipe,
-        util
-      )
+    processor: (data_or_pipe, util) => {
+      return reprocess(data_or_pipe, util, extensions)
+    }
   }
 }
 
@@ -34,47 +31,44 @@ const result2results = (result, out) =>
   !Array.isArray(result[0]) ? [ result ] :
   result
 
-const reprocess = (extensions, data_or_pipe, util) =>
-  Promise.resolve()
-  .then(() => {
-    const extension = extensions.splice(0, 1)[0]
-    asserts(extension, `(${NAME}) !extension`)
-    asserts(typeof extension.processor === 'function', `(${NAME}) typeof extension.processor !== "function"`)
+const reprocess = async (data_or_pipe, util, [extension, ...extensions]) => {
+  asserts(extension, `(${NAME}) !extension`)
+  asserts(typeof extension.processor === 'function', `(${NAME}) typeof extension.processor !== "function"`)
+
+  const results = await Promise.resolve().then(() => {
     return extension.processor(data_or_pipe, util)
+  }).then(result => {
+    return result2results(result, util.out)
   })
-  .then(result => {
-    const results = result2results(result, util.out)
 
-    if (!extensions.length) return results
+  if (!extensions.length) return results
 
-    const firstProcessed = results[0][1]
-    const resultIsStream = firstProcessed && typeof firstProcessed.pipe === 'function'
-    return Promise.all(results.map(([ outpath, processed ]) =>
-      reprocess(
-        extensions,
-        resultIsStream ? (...arg) => processed.pipe(...arg) : processed,
-        assign({}, util, { out: parseXbase(outpath) })
-      )
-    ))
-    .then(alled => [].concat(...alled))
+  const firstProcessed = results[0][1]
+
+  const createNextFirstArg = firstProcessed && typeof firstProcessed.pipe === 'function'
+  ? (processed) => (...arg) => processed.pipe(...arg)
+  : (processed) => processed
+
+  return Promise.all(results.map(([ outpath, processed ]) => {
+    return reprocess(
+      createNextFirstArg(processed),
+      assign({}, util, { out: parseXbase(outpath) }),
+      extensions
+    )
+  })).then(all_results => {
+    return [].concat(...all_results)
   })
+}
 
 /* dock */
 const dock = (type, extensions = [], { encoding } = {}) => {
-  const _buffer2stream = buffer2stream(encoding)
-  const _stream2buffer = stream2buffer(encoding)
-
-  if (type === 'stream') {
-    extensions.unshift(_buffer2stream)
-    extensions.push(_stream2buffer)
-  } else if (type === 'buffer') {
-    extensions.unshift(_stream2buffer)
-    extensions.push(_buffer2stream)
-  } else {
-    throws(`(${NAME}) dock(type) is invalid`)
-  }
-
-  return compose(extensions, true)
+  asserts(type === 'buffer' || type === 'stream', `(${NAME}) dock(type) is invalid`)
+  const b2s = buffer2stream(encoding)
+  const s2b = stream2buffer(encoding)
+  return compose({
+    'buffer': [s2b, ...extensions, b2s],
+    'stream': [b2s, ...extensions, s2b],
+  }[type], true)
 }
 
 const buffer2stream = (encoding = null) => ({
