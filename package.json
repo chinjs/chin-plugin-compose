@@ -15,36 +15,37 @@
     "sourceMap": false,
     "instrument": false,
     "require": [
-      "babel-register"
+      "@babel/register"
     ]
   },
   "scripts": {
-    "ex": "cross-env BABEL_ENV=EXAMPLE chin -c .example -r babel-register",
-    "test": "cross-env BABEL_ENV=TEST nyc mocha -t 10000",
+    "ex": "cross-env NODE_ENV=development chin -c .example -r @babel/register",
+    "test": "cross-env NODE_ENV=test nyc mocha -t 10000",
     "coverage": "nyc report --reporter=lcov && codecov"
   },
   "peerDependencies": {
     "chin": "^3.0.7"
   },
   "devDependencies": {
-    "babel-core": "^6.26.3",
-    "babel-plugin-istanbul": "^4.1.6",
-    "babel-preset-env": "^1.6.1",
-    "babel-preset-power-assert": "^2.0.0",
+    "@babel/core": "^7.7.7",
+    "@babel/preset-env": "^7.7.7",
+    "@babel/register": "^7.7.7",
+    "babel-plugin-istanbul": "^5.2.0",
+    "babel-preset-power-assert": "^3.0.0",
     "chin": "^3.0.7",
     "chin-plugin-gulp": "^0.0.1",
     "chin-plugin-imagemin": "^0.0.4",
     "chin-plugin-inkscape": "^0.0.7",
-    "chin-plugin-json": "^0.0.1",
-    "chin-plugin-unified": "^0.0.3",
+    "chin-plugin-json": "^0.0.3",
+    "chin-plugin-unified": "^0.0.4",
     "codecov": "^3.0.1",
-    "cross-env": "^5.1.4",
-    "gulp-imagemin": "^4.1.0",
-    "mocha": "^5.1.1",
-    "nyc": "^11.7.1",
+    "cross-env": "^6.0.3",
+    "gulp-imagemin": "^6.2.0",
+    "mocha": "^6.2.2",
+    "nyc": "^14.1.1",
     "power-assert": "^1.5.0",
-    "rehype-remark": "^3.0.0",
-    "remark-rehype": "^3.0.0",
+    "rehype-remark": "^7.0.0",
+    "remark-rehype": "^5.0.0",
     "rewire": "^4.0.1"
   }
 }
