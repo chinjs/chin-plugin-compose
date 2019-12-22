@@ -1515,7 +1515,7 @@ chin-plugin-unified@^0.0.4:
     remark "^9.0.0"
     unified "^6.2.0"
 
-chin@^3.0.7:
+chin@^3.1.6:
   version "3.1.6"
   resolved "https://registry.yarnpkg.com/chin/-/chin-3.1.6.tgz#b21ceeff457635b96d1e0bec4c080b3e7976681a"
   integrity sha512-Xjisgx9tB9RaJO39mjzRjcbSH8ValbcU2r9IvnRDE8yBylwUfbvVGwSxyocOh/DWr1ThcWgxDHy6xysYqCnkUg==

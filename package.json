@@ -24,7 +24,7 @@
     "coverage": "nyc report --reporter=lcov && codecov"
   },
   "peerDependencies": {
-    "chin": "^3.0.7"
+    "chin": "^3.1.6"
   },
   "devDependencies": {
     "@babel/core": "^7.7.7",
@@ -32,7 +32,7 @@
     "@babel/register": "^7.7.7",
     "babel-plugin-istanbul": "^5.2.0",
     "babel-preset-power-assert": "^3.0.0",
-    "chin": "^3.0.7",
+    "chin": "^3.1.6",
     "chin-plugin-gulp": "^0.0.1",
     "chin-plugin-imagemin": "^0.0.4",
     "chin-plugin-inkscape": "^0.0.7",
